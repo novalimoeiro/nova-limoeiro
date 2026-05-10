@@ -3,7 +3,7 @@ import { signOut } from '../lib/supabase'
 
 const NAV = [
   { to: '/dashboard',   icon: 'ti-layout-dashboard', label: 'Dashboard'  },
-  { to: '/assistencia', icon: 'ti-table',             label: 'Planilha'   },
+  { to: '/assistencia', icon: 'ti-table',             label: 'Assistência'   },
   { to: '/membros',     icon: 'ti-users',             label: 'Membros'    },
   { to: '/eventos',     icon: 'ti-calendar-event',    label: 'Eventos'    },
 ]
