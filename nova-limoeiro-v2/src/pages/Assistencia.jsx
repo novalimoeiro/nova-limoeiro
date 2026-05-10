@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { useMembers } from '../lib/useMembers'
+import { useMembers } from '../lib/useMembers.jsx'
 import { GROUPS, EVENT_TYPES, MONTHS_PT, getMeetings, dateStr, getGroupStyle } from '../lib/data'
 
 const STATUS_OPTIONS = [
@@ -13,29 +13,32 @@ const STATUS_OPTIONS = [
 
 const thBase = {
   position: 'sticky', top: 0, zIndex: 10, background: 'var(--bg2)',
-  padding: '5px 4px', border: 'var(--border)', fontWeight: 500,
+  padding: '4px 4px', border: 'var(--border)', fontWeight: 500,
   fontSize: 10, color: 'var(--text2)', whiteSpace: 'nowrap', textAlign: 'center',
 }
 const tdBase = { border: 'var(--border)', padding: 0, textAlign: 'center', height: 27, whiteSpace: 'nowrap' }
 
 function thSticky(left, minWidth) {
-  return { ...thBase, position: 'sticky', left, zIndex: 20, textAlign: 'left', minWidth, background: 'var(--bg2)' }
+  return { ...thBase, position: 'sticky', left, zIndex: 20, textAlign: 'center', minWidth, background: 'var(--bg2)' }
 }
 function tdSticky(left, minWidth, bold) {
-  return { ...tdBase, position: 'sticky', left, zIndex: 5, background: 'var(--bg)', padding: '0 8px', textAlign: 'left', minWidth, fontWeight: bold ? 500 : 400, fontSize: 11 }
+  return { ...tdBase, position: 'sticky', left, zIndex: 5, background: 'var(--bg)', padding: '0 4px', textAlign: 'center', minWidth, fontWeight: bold ? 500 : 400, fontSize: 11 }
 }
 
 export default function Assistencia() {
   const [params, setParams] = useSearchParams()
-  const [month, setMonth]   = useState(parseInt(params.get('mes') ?? new Date().getMonth()))
+  const [month, setMonth] = useState(parseInt(params.get('mes') ?? new Date().getMonth()))
   const [groupFilter, setGroupFilter] = useState('all')
   const { members, loading: membersLoading } = useMembers()
   const [attendance, setAttendance] = useState({})
-  const [events, setEvents]         = useState({})
-  const [loading, setLoading]       = useState(true)
-  const [attModal, setAttModal]     = useState(null)
-  const [evtModal, setEvtModal]     = useState(null)
-  const [saving, setSaving]         = useState(false)
+  const [events, setEvents] = useState({})
+  const [visitors, setVisitors] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [attModal, setAttModal] = useState(null)
+  const [evtModal, setEvtModal] = useState(null)
+  const [visitorModal, setVisitorModal] = useState(null)
+  const [visitorInput, setVisitorInput] = useState('')
+  const [saving, setSaving] = useState(false)
 
   const meetings = getMeetings(2026, month)
   const filtered = groupFilter === 'all' ? members : members.filter(m => m.group_name === groupFilter)
@@ -47,16 +50,20 @@ export default function Assistencia() {
 
   async function loadData() {
     setLoading(true)
-    const [{ data: att }, { data: evts }] = await Promise.all([
+    const [{ data: att }, { data: evts }, { data: vis }] = await Promise.all([
       supabase.from('attendance').select('member_id,date,status').eq('year', 2026),
       supabase.from('events').select('date,event_type').eq('year', 2026),
+      supabase.from('visitors').select('date,count').eq('year', 2026),
     ])
     const attMap = {}
     att?.forEach(r => { attMap[`${r.member_id}_${r.date}`] = r.status })
     const evtMap = {}
     evts?.forEach(r => { evtMap[r.date] = r.event_type })
+    const visMap = {}
+    vis?.forEach(r => { visMap[r.date] = r.count })
     setAttendance(attMap)
     setEvents(evtMap)
+    setVisitors(visMap)
     setLoading(false)
   }
 
@@ -87,6 +94,20 @@ export default function Assistencia() {
     setEvtModal(null)
   }
 
+  async function saveVisitors(date, count) {
+    setSaving(true)
+    const n = parseInt(count)
+    if (!count || isNaN(n) || n === 0) {
+      await supabase.from('visitors').delete().eq('date', date)
+      setVisitors(prev => { const nv = { ...prev }; delete nv[date]; return nv })
+    } else {
+      await supabase.from('visitors').upsert({ date, count: n, year: 2026 }, { onConflict: 'date' })
+      setVisitors(prev => ({ ...prev, [date]: n }))
+    }
+    setSaving(false)
+    setVisitorModal(null)
+  }
+
   const byGroup = {}
   filtered.forEach(m => { (byGroup[m.group_name] = byGroup[m.group_name] || []).push(m) })
 
@@ -114,11 +135,11 @@ export default function Assistencia() {
         {isLoading ? (
           <div style={{ padding: 32, color: 'var(--text2)', fontSize: 13 }}>Carregando…</div>
         ) : (
-          <table style={{ borderCollapse: 'collapse', fontSize: 12, width: 'max-content', minWidth: '100%' }}>
+          <table style={{ borderCollapse: 'collapse', fontSize: 11, width: 'max-content', minWidth: '100%' }}>
             <thead>
               <tr>
-                <th style={thSticky(0, 130)}>Membro</th>
-                <th style={thSticky(130, 100)}>Grupo</th>
+                <th style={thSticky(0, 110)}>Nome</th>
+                <th style={thSticky(110, 85)}>Grupo</th>
                 {meetings.map(mt => {
                   const d = dateStr(mt.date)
                   const ev = events[d]
@@ -126,10 +147,10 @@ export default function Assistencia() {
                   return (
                     <th key={d} onClick={() => setEvtModal({ date: d, day: mt.date.getDate() })}
                       title={ev ? evObj?.label : 'Clique para marcar evento'}
-                      style={{ ...thBase, minWidth: 50, cursor: 'pointer', background: ev ? 'var(--amber-bg)' : 'var(--bg2)', color: ev ? 'var(--amber-tx)' : mt.type === 'qui' ? 'var(--blue)' : '#993556' }}>
+                      style={{ ...thBase, minWidth: 46, cursor: 'pointer', background: ev ? 'var(--amber-bg)' : 'var(--bg2)', color: ev ? 'var(--amber-tx)' : mt.type === 'qui' ? 'var(--blue)' : '#993556' }}>
                       <span style={{ fontSize: 9, display: 'block', opacity: .7 }}>{mt.type === 'qui' ? 'Qui' : 'Dom'}</span>
-                      <span style={{ fontSize: 12, fontWeight: 500 }}>{mt.date.getDate()}</span>
-                      {ev && <span style={{ fontSize: 8, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 48 }}>{evObj?.label.split(' ')[0]}</span>}
+                      <span style={{ fontSize: 11, fontWeight: 500 }}>{mt.date.getDate()}</span>
+                      {ev && <span style={{ fontSize: 8, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 44 }}>{evObj?.label.split(' ')[0]}</span>}
                     </th>
                   )
                 })}
@@ -143,7 +164,7 @@ export default function Assistencia() {
                 const g = getGroupStyle(grp)
                 return [
                   <tr key={`sep-${grp}`}>
-                    <td colSpan={meetings.length + 5} style={{ height: 4, background: g.bg, borderColor: g.bg, padding: 0 }} />
+                    <td colSpan={meetings.length + 5} style={{ height: 3, background: g.bg, borderColor: g.bg, padding: 0 }} />
                   </tr>,
                   ...mems.map(mb => {
                     let cP = 0, cZ = 0, cA = 0
@@ -153,9 +174,9 @@ export default function Assistencia() {
                     })
                     return (
                       <tr key={mb.id}>
-                        <td style={tdSticky(0, 130)}>{mb.name}</td>
-                        <td style={tdSticky(130, 100)}>
-                          <span className="group-tag" style={{ background: g.bg, color: g.tx }}>{grp}</span>
+                        <td style={tdSticky(0, 110)}>{mb.name}</td>
+                        <td style={tdSticky(110, 85)}>
+                          <span className="group-tag" style={{ background: g.bg, color: g.tx, fontSize: 10 }}>{grp}</span>
                         </td>
                         {meetings.map(mt => {
                           const d = dateStr(mt.date)
@@ -169,18 +190,39 @@ export default function Assistencia() {
                           )
                         })}
                         <td style={{ ...tdBase, fontWeight: 500, color: 'var(--green-tx)', fontSize: 11 }}>{cP}</td>
-                        <td style={{ ...tdBase, fontWeight: 500, color: 'var(--blue)',     fontSize: 11 }}>{cZ}</td>
-                        <td style={{ ...tdBase, fontWeight: 500, color: 'var(--red-tx)',   fontSize: 11 }}>{cA}</td>
+                        <td style={{ ...tdBase, fontWeight: 500, color: 'var(--blue)', fontSize: 11 }}>{cZ}</td>
+                        <td style={{ ...tdBase, fontWeight: 500, color: 'var(--red-tx)', fontSize: 11 }}>{cA}</td>
                       </tr>
                     )
                   })
                 ]
               })}
 
-              {/* Totals */}
+              {/* Visitors row */}
+              <tr>
+                <td colSpan={meetings.length + 5} style={{ height: 3, background: 'var(--amber-bg)', borderColor: 'var(--amber-bg)', padding: 0 }} />
+              </tr>
+              <tr>
+                <td style={{ ...tdSticky(0, 110), fontWeight: 600, color: 'var(--amber-tx)', fontSize: 11 }}>Visitantes</td>
+                <td style={tdSticky(110, 85)} />
+                {meetings.map(mt => {
+                  const d = dateStr(mt.date)
+                  if (events[d]) return <td key={d} style={{ ...tdBase, background: 'var(--amber-bg)' }}>—</td>
+                  const count = visitors[d]
+                  return (
+                    <td key={d} style={{ ...tdBase, cursor: 'pointer', background: count ? 'var(--amber-bg)' : undefined }}
+                      onClick={() => { setVisitorModal({ date: d, day: mt.date.getDate() }); setVisitorInput(count ? String(count) : '') }}>
+                      {count ? <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--amber-tx)' }}>{count}</span> : ''}
+                    </td>
+                  )
+                })}
+                <td style={tdBase} /><td style={tdBase} /><td style={tdBase} />
+              </tr>
+
+              {/* Totals row */}
               <tr style={{ background: 'var(--bg2)' }}>
-                <td style={tdSticky(0, 130, true)}>Total</td>
-                <td style={tdSticky(130, 100, true)} />
+                <td style={{ ...tdSticky(0, 110, true), fontSize: 10 }}>Total</td>
+                <td style={tdSticky(110, 85, true)} />
                 {meetings.map(mt => {
                   const d = dateStr(mt.date)
                   if (events[d]) return <td key={d} style={tdBase} />
@@ -190,7 +232,7 @@ export default function Assistencia() {
                     if (v === 'P') P++; else if (v === 'Z') Z++; else if (v === 'A') A++
                   })
                   return (
-                    <td key={d} style={{ ...tdBase, fontSize: 10 }}>
+                    <td key={d} style={{ ...tdBase, fontSize: 9 }}>
                       <span style={{ color: 'var(--green-tx)' }}>{P}</span>/
                       <span style={{ color: 'var(--blue)' }}>{Z}</span>/
                       <span style={{ color: 'var(--red-tx)' }}>{A}</span>
@@ -224,6 +266,29 @@ export default function Assistencia() {
               </button>
             </div>
             <button className="modal-cancel" onClick={() => setAttModal(null)}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
+      {/* Visitor modal */}
+      {visitorModal && (
+        <div className="modal-overlay" onClick={() => setVisitorModal(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h3>Visitantes — Dia {visitorModal.day}</h3>
+            <div className="sub">Quantidade de visitantes nesta reunião.</div>
+            <div className="field">
+              <label>Quantidade</label>
+              <input type="number" min="0" autoFocus
+                value={visitorInput}
+                onChange={e => setVisitorInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && saveVisitors(visitorModal.date, visitorInput)}
+                placeholder="0" />
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button className="btn btn-primary" style={{ flex: 1, justifyContent: 'center' }}
+                onClick={() => saveVisitors(visitorModal.date, visitorInput)}>Salvar</button>
+              <button className="btn" style={{ flex: 1, justifyContent: 'center' }} onClick={() => setVisitorModal(null)}>Cancelar</button>
+            </div>
           </div>
         </div>
       )}

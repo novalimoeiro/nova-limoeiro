@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { useMembers } from '../lib/useMembers'
+import { useMembers } from '../lib/useMembers.jsx'
 import { GROUPS, getGroupStyle, initials } from '../lib/data'
 
 const PRIVILEGES = ['Publicador','Pioneiro Auxiliar','Pioneiro Regular','Ancião','Servo Ministerial']
@@ -17,30 +17,15 @@ function formatDate(d) {
   return `${day}/${m}/${y}`
 }
 
-function formatPhone(v) {
-  if (!v) return null
-  return <a href={`tel:${v}`} style={{ color: 'var(--blue)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-    <i className="ti ti-phone" style={{ fontSize: 13 }} />{v}
-  </a>
-}
-
-function formatCell(v) {
-  if (!v) return null
-  return <a href={`https://wa.me/55${v.replace(/\D/g,'')}`} target="_blank" rel="noreferrer"
-    style={{ color: '#25D366', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-    <i className="ti ti-brand-whatsapp" style={{ fontSize: 13 }} />{v}
-  </a>
-}
-
 export default function Membros() {
   const { members, loading, invalidate } = useMembers()
-  const [search, setSearch]         = useState('')
+  const [search, setSearch]           = useState('')
   const [groupFilter, setGroupFilter] = useState('all')
-  const [modal, setModal]           = useState(null)  // null | 'add' | 'edit' | 'view'
-  const [selected, setSelected]     = useState(null)  // member object
-  const [form, setForm]             = useState(EMPTY)
-  const [saving, setSaving]         = useState(false)
-  const [confirmDel, setConfirmDel] = useState(null)
+  const [modal, setModal]             = useState(null)
+  const [selected, setSelected]       = useState(null)
+  const [form, setForm]               = useState(EMPTY)
+  const [saving, setSaving]           = useState(false)
+  const [confirmDel, setConfirmDel]   = useState(null)
 
   const filtered = members.filter(m => {
     const matchSearch = m.name.toLowerCase().includes(search.toLowerCase())
@@ -67,7 +52,6 @@ export default function Membros() {
   }
 
   function openView(m) { setSelected(m); setModal('view') }
-
   function field(key, val) { setForm(f => ({ ...f, [key]: val })) }
 
   async function save() {
@@ -101,15 +85,19 @@ export default function Membros() {
     invalidate()
   }
 
-  const Row = ({ label, icon, value }) => value ? (
-    <div style={{ display: 'flex', gap: 8, padding: '6px 0', borderBottom: 'var(--border)', alignItems: 'flex-start' }}>
-      <i className={`ti ${icon}`} style={{ fontSize: 15, color: 'var(--text2)', marginTop: 1, flexShrink: 0, width: 18 }} />
-      <div>
-        <div style={{ fontSize: 10, color: 'var(--text2)', marginBottom: 1 }}>{label}</div>
-        <div style={{ fontSize: 13 }}>{value}</div>
+  // Info row for view modal
+  function InfoRow({ label, icon, value }) {
+    if (!value) return null
+    return (
+      <div style={{ display: 'flex', gap: 10, padding: '7px 0', borderBottom: 'var(--border)', alignItems: 'flex-start' }}>
+        <i className={`ti ${icon}`} style={{ fontSize: 15, color: 'var(--text2)', marginTop: 1, flexShrink: 0, width: 18, textAlign: 'center' }} />
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--text2)', marginBottom: 1 }}>{label}</div>
+          <div style={{ fontSize: 13, color: 'var(--text)' }}>{value}</div>
+        </div>
       </div>
-    </div>
-  ) : null
+    )
+  }
 
   return (
     <div style={{ padding: '20px 20px 40px' }}>
@@ -136,20 +124,33 @@ export default function Membros() {
         </div>
       </div>
 
+      {/* Members by group */}
       {loading ? <p style={{ color:'var(--text2)', fontSize:13 }}>Carregando…</p>
       : filtered.length === 0 ? <p style={{ color:'var(--text2)', fontSize:13 }}>Nenhum membro encontrado.</p>
       : Object.entries(byGroup).map(([grp, mems]) => {
         const g = getGroupStyle(grp)
         return (
-          <div key={grp} style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 12, fontWeight: 500, color: g.tx, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 7 }}>
-              <span style={{ width: 9, height: 9, borderRadius: '50%', background: g.color, display: 'inline-block' }} />
-              {grp} <span style={{ fontWeight: 400, color: 'var(--text2)' }}>({mems.length})</span>
+          <div key={grp} style={{ marginBottom: 24 }}>
+            {/* Group title - bigger */}
+            <div style={{
+              fontSize: 15, fontWeight: 600, color: g.tx, marginBottom: 10,
+              display: 'flex', alignItems: 'center', gap: 8,
+              borderLeft: `3px solid ${g.color}`, paddingLeft: 10,
+            }}>
+              {grp}
+              <span style={{ fontWeight: 400, color: 'var(--text2)', fontSize: 13 }}>({mems.length})</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
               {mems.map(m => (
-                <div key={m.id} style={{ background: 'var(--bg)', border: 'var(--border)', borderRadius: 'var(--radius)', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 34, height: 34, borderRadius: '50%', background: g.bg, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 500, color: g.tx }}>
+                <div key={m.id} style={{
+                  background: 'var(--bg)', border: 'var(--border)', borderRadius: 'var(--radius)',
+                  padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10,
+                }}>
+                  <div style={{
+                    width: 34, height: 34, borderRadius: '50%', background: g.bg, flexShrink: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 11, fontWeight: 500, color: g.tx,
+                  }}>
                     {initials(m.name)}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -157,13 +158,16 @@ export default function Membros() {
                     <div style={{ fontSize: 11, color: 'var(--text2)' }}>{m.privilege || 'Publicador'}</div>
                   </div>
                   <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
-                    <button onClick={() => openView(m)} title="Visualizar" style={{ background: 'none', border: 'none', color: 'var(--text2)', cursor: 'pointer', fontSize: 16, padding: 3 }}>
+                    <button onClick={() => openView(m)} title="Visualizar"
+                      style={{ background: 'none', border: 'none', color: 'var(--text2)', cursor: 'pointer', fontSize: 16, padding: 3 }}>
                       <i className="ti ti-eye" />
                     </button>
-                    <button onClick={() => openEdit(m)} title="Editar" style={{ background: 'none', border: 'none', color: 'var(--text2)', cursor: 'pointer', fontSize: 16, padding: 3 }}>
+                    <button onClick={() => openEdit(m)} title="Editar"
+                      style={{ background: 'none', border: 'none', color: 'var(--text2)', cursor: 'pointer', fontSize: 16, padding: 3 }}>
                       <i className="ti ti-edit" />
                     </button>
-                    <button onClick={() => setConfirmDel(m)} title="Desativar" style={{ background: 'none', border: 'none', color: 'var(--red-tx)', cursor: 'pointer', fontSize: 16, padding: 3 }}>
+                    <button onClick={() => setConfirmDel(m)} title="Desativar"
+                      style={{ background: 'none', border: 'none', color: 'var(--red-tx)', cursor: 'pointer', fontSize: 16, padding: 3 }}>
                       <i className="ti ti-user-minus" />
                     </button>
                   </div>
@@ -178,41 +182,58 @@ export default function Membros() {
       {modal === 'view' && selected && (
         <div className="modal-overlay" onClick={() => setModal(null)}>
           <div className="modal" style={{ maxWidth: 360 }} onClick={e => e.stopPropagation()}>
-            {(() => { const g = getGroupStyle(selected.group_name); return (
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16 }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: g.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 600, color: g.tx, flexShrink: 0 }}>
-                  {initials(selected.name)}
+            {(() => {
+              const g = getGroupStyle(selected.group_name)
+              return (
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16, paddingBottom: 14, borderBottom: 'var(--border)' }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: g.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 600, color: g.tx, flexShrink: 0 }}>
+                    {initials(selected.name)}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 600 }}>{selected.name}</div>
+                    <div style={{ fontSize: 12, color: g.tx, fontWeight: 500 }}>{selected.group_name}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text2)', marginTop: 1 }}>{selected.privilege || 'Publicador'}</div>
+                  </div>
                 </div>
+              )
+            })()}
+
+            <InfoRow label="Data de Nascimento" icon="ti-cake" value={selected.birthdate ? formatDate(selected.birthdate) : null} />
+
+            {(selected.address || selected.neighborhood) && (
+              <div style={{ display: 'flex', gap: 10, padding: '7px 0', borderBottom: 'var(--border)', alignItems: 'flex-start' }}>
+                <i className="ti ti-map-pin" style={{ fontSize: 15, color: 'var(--text2)', marginTop: 1, flexShrink: 0, width: 18, textAlign: 'center' }} />
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 500 }}>{selected.name}</div>
-                  <div style={{ fontSize: 12, color: g.tx, marginTop: 2 }}>{selected.group_name}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text2)' }}>{selected.privilege || 'Publicador'}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text2)', marginBottom: 1 }}>Endereço</div>
+                  {selected.address && <div style={{ fontSize: 13 }}>{selected.address}{selected.number ? `, ${selected.number}` : ''}{selected.complement ? ` — ${selected.complement}` : ''}</div>}
+                  {selected.neighborhood && <div style={{ fontSize: 12, color: 'var(--text2)' }}>{selected.neighborhood}{selected.cep ? ` · ${selected.cep}` : ''}</div>}
                 </div>
               </div>
-            )})()}
+            )}
 
-            <Row label="Data de Nascimento" icon="ti-cake" value={selected.birthdate ? formatDate(selected.birthdate) : null} />
-            <Row label="Endereço" icon="ti-map-pin"
-              value={[selected.address, selected.number, selected.complement, selected.neighborhood, selected.cep].filter(Boolean).join(', ') || null} />
-            <div style={{ padding: '6px 0', borderBottom: 'var(--border)' }}>
-              {selected.phone_home && <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
-                <i className="ti ti-phone" style={{ fontSize: 15, color: 'var(--text2)', width: 18 }} />
+            {selected.phone_home && (
+              <div style={{ display: 'flex', gap: 10, padding: '7px 0', borderBottom: 'var(--border)', alignItems: 'center' }}>
+                <i className="ti ti-phone" style={{ fontSize: 15, color: 'var(--text2)', width: 18, textAlign: 'center' }} />
                 <div>
-                  <div style={{ fontSize: 10, color: 'var(--text2)' }}>Tel. Residencial</div>
-                  {formatPhone(selected.phone_home)}
+                  <div style={{ fontSize: 10, color: 'var(--text2)', marginBottom: 1 }}>Tel. Residencial</div>
+                  <a href={`tel:${selected.phone_home}`} style={{ fontSize: 13, color: 'var(--blue)', textDecoration: 'none' }}>{selected.phone_home}</a>
                 </div>
-              </div>}
-              {selected.phone_cell && <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <i className="ti ti-device-mobile" style={{ fontSize: 15, color: 'var(--text2)', width: 18 }} />
-                <div>
-                  <div style={{ fontSize: 10, color: 'var(--text2)' }}>Tel. Celular</div>
-                  {formatCell(selected.phone_cell)}
-                </div>
-              </div>}
-            </div>
+              </div>
+            )}
 
-            <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-              <button className="btn" style={{ flex: 1, justifyContent: 'center' }} onClick={() => { openEdit(selected); }}>
+            {selected.phone_cell && (
+              <div style={{ display: 'flex', gap: 10, padding: '7px 0', borderBottom: 'var(--border)', alignItems: 'center' }}>
+                <i className="ti ti-brand-whatsapp" style={{ fontSize: 15, color: '#25D366', width: 18, textAlign: 'center' }} />
+                <div>
+                  <div style={{ fontSize: 10, color: 'var(--text2)', marginBottom: 1 }}>Tel. Celular</div>
+                  <a href={`https://wa.me/55${selected.phone_cell.replace(/\D/g,'')}`} target="_blank" rel="noreferrer"
+                    style={{ fontSize: 13, color: '#25D366', textDecoration: 'none' }}>{selected.phone_cell}</a>
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+              <button className="btn" style={{ flex: 1, justifyContent: 'center' }} onClick={() => openEdit(selected)}>
                 <i className="ti ti-edit" /> Editar
               </button>
               <button className="btn" style={{ flex: 1, justifyContent: 'center' }} onClick={() => setModal(null)}>Fechar</button>
@@ -245,17 +266,17 @@ export default function Membros() {
                   {PRIVILEGES.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
-              <div className="field">
-                <label>Data de Nascimento</label>
+              <div className="field" style={{ gridColumn: '1/-1' }}>
+                <label><i className="ti ti-cake" style={{ fontSize: 12 }} /> Data de Nascimento</label>
                 <input type="date" value={form.birthdate} onChange={e => field('birthdate', e.target.value)} />
               </div>
               <div className="field" style={{ gridColumn: '1/-1' }}>
-                <label>Endereço</label>
+                <label><i className="ti ti-map-pin" style={{ fontSize: 12 }} /> Endereço</label>
                 <input type="text" value={form.address} onChange={e => field('address', e.target.value)} placeholder="Rua / Av." />
               </div>
               <div className="field">
-                <label>Número</label>
-                <input type="text" value={form.number} onChange={e => field('number', e.target.value)} placeholder="N.°" />
+                <label>N.°</label>
+                <input type="text" value={form.number} onChange={e => field('number', e.target.value)} placeholder="Número" />
               </div>
               <div className="field">
                 <label>Casa / AP</label>
@@ -274,7 +295,7 @@ export default function Membros() {
                 <input type="tel" value={form.phone_home} onChange={e => field('phone_home', e.target.value)} placeholder="(00) 0000-0000" />
               </div>
               <div className="field">
-                <label><i className="ti ti-device-mobile" style={{ fontSize: 12 }} /> Tel. Celular</label>
+                <label><i className="ti ti-brand-whatsapp" style={{ fontSize: 12, color: '#25D366' }} /> Celular</label>
                 <input type="tel" value={form.phone_cell} onChange={e => field('phone_cell', e.target.value)} placeholder="(00) 00000-0000" />
               </div>
             </div>
