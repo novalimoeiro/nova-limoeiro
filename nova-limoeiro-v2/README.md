@@ -93,6 +93,7 @@ Após o domínio estar ativo:
 | Membros      | `novalimoeiro.com.br/membros`              |
 | Eventos      | `novalimoeiro.com.br/eventos`              |
 
+
 ---
 
 ## Desenvolvimento local
