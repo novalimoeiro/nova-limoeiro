@@ -1,53 +1,33 @@
-import { useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { supabase } from './supabase'
 
-// Global cache so all pages share the same fetch
-let cache = null
-let listeners = []
+const MembersCtx = createContext(null)
 
-function notify() {
-  listeners.forEach(fn => fn([...cache]))
-}
+export function MembersProvider({ children }) {
+  const [members, setMembers] = useState([])
+  const [loading, setLoading] = useState(true)
 
-export function useMembers() {
-  const [members, setMembers] = useState(cache || [])
-  const [loading, setLoading] = useState(!cache)
-
-  useEffect(() => {
-    listeners.push(setMembers)
-    if (!cache) {
-      supabase
-        .from('members')
-        .select('*')
-        .eq('active', true)
-        .order('group_name')
-        .order('name')
-        .then(({ data }) => {
-          cache = data || []
-          setLoading(false)
-          notify()
-        })
-    }
-    return () => {
-      listeners = listeners.filter(fn => fn !== setMembers)
-    }
-  }, [])
-
-  function invalidate() {
-    cache = null
+  const load = useCallback(async () => {
     setLoading(true)
-    supabase
+    const { data } = await supabase
       .from('members')
       .select('*')
       .eq('active', true)
       .order('group_name')
       .order('name')
-      .then(({ data }) => {
-        cache = data || []
-        setLoading(false)
-        notify()
-      })
-  }
+    setMembers(data || [])
+    setLoading(false)
+  }, [])
 
-  return { members, loading, invalidate }
+  useEffect(() => { load() }, [load])
+
+  return (
+    <MembersCtx.Provider value={{ members, loading, invalidate: load }}>
+      {children}
+    </MembersCtx.Provider>
+  )
+}
+
+export function useMembers() {
+  return useContext(MembersCtx)
 }
