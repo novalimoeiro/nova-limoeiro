@@ -30,6 +30,7 @@ nova-limoeiro/
 
 ---
 
+
 ## Passo a passo para colocar no ar
 
 ### 1. Criar conta no Supabase (banco de dados)
