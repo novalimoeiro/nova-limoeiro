@@ -14,8 +14,8 @@ const STATUS_OPTIONS = [
 
 const thBase = { position:'sticky', top:0, zIndex:10, background:'var(--bg2)', padding:'4px 4px', border:'var(--border)', fontWeight:500, fontSize:10, color:'var(--text2)', whiteSpace:'nowrap', textAlign:'center' }
 const tdBase = { border:'var(--border)', padding:0, textAlign:'center', height:27, whiteSpace:'nowrap' }
-function thSticky(left, minWidth) { return { ...thBase, position:'sticky', left, zIndex:20, textAlign:'left', minWidth, background:'var(--bg2)', paddingLeft:8 } }
-function tdSticky(left, minWidth, bold) { return { ...tdBase, position:'sticky', left, zIndex:5, background:'var(--bg)', padding:'0 8px', textAlign:'left', minWidth, fontWeight:bold?500:400, fontSize:11 } }
+function thSticky(left, minWidth) { return { ...thBase, position:'sticky', left, zIndex:20, textAlign:'center', minWidth, background:'var(--bg2)' } }
+function tdSticky(left, minWidth, bold) { return { ...tdBase, position:'sticky', left, zIndex:5, background:'var(--bg)', padding:'0 4px', textAlign:'center', minWidth, fontWeight:bold?500:400, fontSize:12 } }
 
 export default function Assistencia() {
   const [params, setParams] = useSearchParams()
@@ -121,10 +121,10 @@ export default function Assistencia() {
       {/* Table */}
       <div style={{ flex:1, overflow:'auto' }}>
         {isLoading ? <div style={{ padding:32, color:'var(--text2)', fontSize:13 }}>Carregando…</div> : (
-          <table style={{ borderCollapse:'collapse', fontSize:11, width:'max-content', minWidth:'100%' }}>
+          <table style={{ borderCollapse:'collapse', fontSize:12, width:'max-content', minWidth:'100%' }}>
             <thead>
               <tr>
-                <th style={thSticky(0, 150)}>Nome</th>
+                <th style={thSticky(0, 120)}>Nome</th>
                 {meetings.map(mt => {
                   const d = dateStr(mt.date)
                   const ev = events[d]
@@ -148,8 +148,8 @@ export default function Assistencia() {
                 return [
                   <tr key={`sep-${grp}`}>
                     <td colSpan={meetings.length+4}
-                      style={{ background:g.bg, padding:'4px 10px', borderColor:g.bg }}>
-                      <span style={{ fontSize:10, fontWeight:600, color:g.tx, letterSpacing:.3 }}>{grp}</span>
+                      style={{ background:g.bg, padding:'5px 10px', borderColor:g.bg, borderTop:'2px solid ' + g.color }}>
+                      <span style={{ fontSize:11, fontWeight:700, color:g.tx, letterSpacing:.4, whiteSpace:'nowrap' }}>{grp}</span>
                     </td>
                   </tr>,
                   ...mems.map(mb => {
@@ -160,7 +160,7 @@ export default function Assistencia() {
                     })
                     return (
                       <tr key={mb.id}>
-                        <td style={tdSticky(0,150)}>{mb.name}</td>
+                        <td style={tdSticky(0,120)}>{mb.name}</td>
                         {meetings.map(mt => {
                           const d = dateStr(mt.date)
                           if (events[d]) return <td key={d} style={{ ...tdBase, background:'var(--amber-bg)', color:'var(--amber-tx)', fontSize:10 }}>—</td>
@@ -184,7 +184,7 @@ export default function Assistencia() {
               {/* Visitantes/Outros row */}
               <tr><td colSpan={meetings.length+5} style={{ height:3, background:'var(--amber-bg)', borderColor:'var(--amber-bg)', padding:0 }} /></tr>
               <tr>
-                <td style={{ ...tdSticky(0,150), fontWeight:600, color:'var(--amber-tx)', fontSize:11 }}>Visitantes/Outros</td>
+                <td style={{ ...tdSticky(0,120), fontWeight:600, color:'var(--amber-tx)', fontSize:11 }}>Visitantes/Outros</td>
                 {meetings.map(mt => {
                   const d = dateStr(mt.date)
                   if (events[d]) return <td key={d} style={{ ...tdBase, background:'var(--amber-bg)' }}>—</td>
