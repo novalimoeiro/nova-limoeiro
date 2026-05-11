@@ -12,8 +12,8 @@ const STATUS_OPTIONS = [
   { v:'E', label:'Visit./Est.', icon:'ti-star',   bg:'var(--amber-bg)', tx:'var(--amber-tx)' },
 ]
 
-const thBase = { position:'sticky', top:0, zIndex:10, background:'var(--bg2)', padding:'4px 4px', border:'var(--border)', fontWeight:500, fontSize:10, color:'var(--text2)', whiteSpace:'nowrap', textAlign:'center' }
-const tdBase = { border:'var(--border)', padding:0, textAlign:'center', height:27, whiteSpace:'nowrap' }
+const thBase = { position:'sticky', top:0, zIndex:10, background:'var(--bg2)', padding:'3px 2px', border:'var(--border)', fontWeight:500, fontSize:10, color:'var(--text2)', textAlign:'center', width:42 }
+const tdBase = { border:'var(--border)', padding:0, textAlign:'center', height:27, width:42 }
 function thSticky(left, minWidth) { return { ...thBase, position:'sticky', left, zIndex:20, textAlign:'center', minWidth, background:'var(--bg2)' } }
 function tdSticky(left, minWidth, bold) { return { ...tdBase, position:'sticky', left, zIndex:5, background:'var(--bg)', padding:'0 4px', textAlign:'center', minWidth, fontWeight:bold?500:400, fontSize:12 } }
 
@@ -131,10 +131,10 @@ export default function Assistencia() {
                   const evObj = ev ? EVENT_TYPES.find(e => e.id === ev) : null
                   return (
                     <th key={d} onClick={() => setEvtModal({ date:d, day:mt.date.getDate() })}
-                      style={{ ...thBase, minWidth: ev ? Math.min(evObj?.label.length * 7 + 10, 130) : 46, cursor:'pointer', background:ev?'var(--amber-bg)':'var(--bg2)', color:ev?'var(--amber-tx)':mt.type==='qui'?'var(--blue)':'#993556' }}>
+                      style={{ ...thBase, width:42, cursor:'pointer', background:ev?'var(--amber-bg)':'var(--bg2)', color:ev?'var(--amber-tx)':mt.type==='qui'?'var(--blue)':'#993556' }}>
                       <span style={{ fontSize:9, display:'block', opacity:.7 }}>{mt.type==='qui'?'Qui':'Dom'}</span>
                       <span style={{ fontSize:11, fontWeight:500 }}>{mt.date.getDate()}</span>
-                      {ev && <span style={{ fontSize:8, display:'block', whiteSpace:'normal', lineHeight:1.2, marginTop:1 }}>{evObj?.label}</span>}
+                      {ev && <i className={`ti ${evObj?.icon || 'ti-star'}`} style={{ fontSize:10, display:'block', marginTop:1 }} title={evObj?.label} aria-label={evObj?.label} />}
                     </th>
                   )
                 })}
@@ -148,8 +148,8 @@ export default function Assistencia() {
                 return [
                   <tr key={`sep-${grp}`}>
                     <td colSpan={meetings.length+4}
-                      style={{ background:g.bg, padding:'5px 10px', borderColor:g.bg, borderTop:'2px solid ' + g.color }}>
-                      <span style={{ fontSize:11, fontWeight:700, color:g.tx, letterSpacing:.4, whiteSpace:'nowrap' }}>{grp}</span>
+                      style={{ background:g.bg, padding:'5px 10px', borderTop:`2px solid ${g.color}`, borderBottom:`1px solid ${g.color}30` }}>
+                      <span style={{ fontSize:11, fontWeight:700, color:g.color, letterSpacing:.3, whiteSpace:'nowrap' }}>{grp}</span>
                     </td>
                   </tr>,
                   ...mems.map(mb => {
