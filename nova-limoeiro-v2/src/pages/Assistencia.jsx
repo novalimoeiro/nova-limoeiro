@@ -112,7 +112,7 @@ export default function Assistencia() {
           <span style={{ fontSize:11, color:'var(--text2)' }}>Grupo:</span>
           <button className={`pill ${groupFilter==='all'?'on':''}`} onClick={() => setGroupFilter('all')}>Todos</button>
           {groups.map(g => (
-            <button key={g.id} className={`pill ${groupFilter===g.name?'on':''}`} onClick={() => setGroupFilter(g.name)}>{g.name.split(' ')[0]}</button>
+            <button key={g.id} className={`pill ${groupFilter===g.name?'on':''}`} onClick={() => setGroupFilter(g.name)}>{g.name}</button>
           ))}
         </div>
         {saving && <span style={{ fontSize:11, color:'var(--text2)', marginLeft:'auto' }}>Salvando…</span>}
@@ -131,10 +131,10 @@ export default function Assistencia() {
                   const evObj = ev ? EVENT_TYPES.find(e => e.id === ev) : null
                   return (
                     <th key={d} onClick={() => setEvtModal({ date:d, day:mt.date.getDate() })}
-                      style={{ ...thBase, minWidth:46, cursor:'pointer', background:ev?'var(--amber-bg)':'var(--bg2)', color:ev?'var(--amber-tx)':mt.type==='qui'?'var(--blue)':'#993556' }}>
+                      style={{ ...thBase, minWidth: ev ? 90 : 46, cursor:'pointer', background:ev?'var(--amber-bg)':'var(--bg2)', color:ev?'var(--amber-tx)':mt.type==='qui'?'var(--blue)':'#993556' }}>
                       <span style={{ fontSize:9, display:'block', opacity:.7 }}>{mt.type==='qui'?'Qui':'Dom'}</span>
                       <span style={{ fontSize:11, fontWeight:500 }}>{mt.date.getDate()}</span>
-                      {ev && <span style={{ fontSize:8, display:'block', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:44 }}>{evObj?.label.split(' ')[0]}</span>}
+                      {ev && <span style={{ fontSize:8, display:'block', whiteSpace:'nowrap' }}>{evObj?.label}</span>}
                     </th>
                   )
                 })}
