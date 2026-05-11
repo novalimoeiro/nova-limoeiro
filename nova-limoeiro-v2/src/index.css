@@ -1,39 +1,83 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --blue:    #185FA5;
-  --blue-bg: #E6F1FB;
-  --blue-tx: #0C447C;
-  --green-bg:#EAF3DE;
-  --green-tx:#3B6D11;
-  --red-bg:  #FCEBEB;
-  --red-tx:  #A32D2D;
-  --amber-bg:#FAEEDA;
-  --amber-tx:#633806;
-  --amber-br:#EF9F27;
-  --radius:  8px;
-  --radius-lg: 12px;
-  --border:  0.5px solid #e2e2e0;
+  --blue:       #185FA5;
+  --blue-bg:    #E6F1FB;
+  --blue-tx:    #0C447C;
+  --green-bg:   #EAF3DE;
+  --green-tx:   #3B6D11;
+  --red-bg:     #FCEBEB;
+  --red-tx:     #A32D2D;
+  --amber-bg:   #FAEEDA;
+  --amber-tx:   #633806;
+  --amber-br:   #EF9F27;
+
+  /* Table attendance colors - light theme */
+  --att-P-bg:   #EAF3DE;
+  --att-P-tx:   #3B6D11;
+  --att-Z-bg:   #E6F1FB;
+  --att-Z-tx:   #0C447C;
+  --att-A-bg:   #FCEBEB;
+  --att-A-tx:   #A32D2D;
+  --att-E-bg:   #FAEEDA;
+  --att-E-tx:   #633806;
+
+  /* Table header day colors */
+  --col-qui:    #185FA5;
+  --col-dom:    #993556;
+  --col-evt-bg: #FAEEDA;
+  --col-evt-tx: #633806;
+
+  --radius:     8px;
+  --radius-lg:  12px;
+  --border:     0.5px solid #e2e2e0;
   --border-strong: 0.5px solid #c8c8c5;
-  --bg:      #ffffff;
-  --bg2:     #f7f7f5;
-  --bg3:     #f0efeb;
-  --text:    #1a1a18;
-  --text2:   #6b6b68;
-  --text3:   #9a9a96;
-  --font:    -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --nav-w:   220px;
-  --header-h:56px;
+  --bg:         #ffffff;
+  --bg2:        #f7f7f5;
+  --bg3:        #f0efeb;
+  --text:       #1a1a18;
+  --text2:      #6b6b68;
+  --text3:      #9a9a96;
+  --font:       -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --nav-w:      220px;
+  --header-h:   56px;
 }
 
 [data-theme="dark"] {
-  --bg:   #1a1a1c;
-  --bg2:  #232325;
-  --bg3:  #2c2c2e;
-  --text: #f0efeb;
-  --text2:#a8a8a4;
-  --text3:#686864;
-  --border: 0.5px solid #3a3a3c;
+  --blue:       #4A9FE8;
+  --blue-bg:    #1A3A5C;
+  --blue-tx:    #90C4F5;
+  --green-bg:   #1A3A18;
+  --green-tx:   #7DC95A;
+  --red-bg:     #3A1A1A;
+  --red-tx:     #F07070;
+  --amber-bg:   #3A2A0A;
+  --amber-tx:   #F0B060;
+  --amber-br:   #C07820;
+
+  /* Table attendance colors - dark theme */
+  --att-P-bg:   #1E3D1A;
+  --att-P-tx:   #82D060;
+  --att-Z-bg:   #1A2E4A;
+  --att-Z-tx:   #70B8F8;
+  --att-A-bg:   #3D1A1A;
+  --att-A-tx:   #F07878;
+  --att-E-bg:   #3A2A08;
+  --att-E-tx:   #F0B050;
+
+  /* Table header day colors - dark theme */
+  --col-qui:    #70B8F8;
+  --col-dom:    #E07090;
+  --col-evt-bg: #3A2A08;
+  --col-evt-tx: #F0B050;
+
+  --bg:         #1a1a1c;
+  --bg2:        #232325;
+  --bg3:        #2c2c2e;
+  --text:       #f0efeb;
+  --text2:      #a8a8a4;
+  --text3:      #686864;
+  --border:     0.5px solid #3a3a3c;
   --border-strong: 0.5px solid #4a4a4c;
 }
 
@@ -47,17 +91,18 @@ button { font-family: var(--font); cursor: pointer; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
 
-.badge { font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 20px; display: inline-block; }
-.badge-P { background: var(--green-bg); color: var(--green-tx); }
-.badge-Z { background: var(--blue-bg);  color: var(--blue-tx);  }
-.badge-A { background: var(--red-bg);   color: var(--red-tx);   }
-.badge-E { background: var(--amber-bg); color: var(--amber-tx); }
+/* Badges - use CSS vars for both themes */
+.badge { font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 20px; display: inline-block; }
+.badge-P { background: var(--att-P-bg); color: var(--att-P-tx); }
+.badge-Z { background: var(--att-Z-bg); color: var(--att-Z-tx); }
+.badge-A { background: var(--att-A-bg); color: var(--att-A-tx); }
+.badge-E { background: var(--att-E-bg); color: var(--att-E-tx); }
 
 .group-tag { font-size: 11px; border-radius: 4px; padding: 2px 6px; display: inline-block; }
 
 .modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,.4);
+  background: rgba(0,0,0,.5);
   display: flex; align-items: center; justify-content: center;
   z-index: 200; padding: 16px;
 }
@@ -73,7 +118,7 @@ button { font-family: var(--font); cursor: pointer; }
 .btn { padding: 8px 16px; border-radius: var(--radius); border: var(--border); background: var(--bg); color: var(--text); font-size: 13px; font-weight: 500; transition: background .15s; display: inline-flex; align-items: center; gap: 6px; }
 .btn:hover { background: var(--bg2); }
 .btn-primary { background: var(--blue); color: #fff; border-color: var(--blue); }
-.btn-primary:hover { background: var(--blue-tx); border-color: var(--blue-tx); }
+.btn-primary:hover { filter: brightness(1.15); }
 .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
 .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
@@ -92,7 +137,7 @@ button { font-family: var(--font); cursor: pointer; }
 }
 .evt-row:hover { background: var(--amber-bg); }
 .evt-row.selected { background: var(--amber-bg); border-color: var(--amber-br); font-weight: 500; color: var(--amber-tx); }
-.evt-row i { font-size: 18px; color: #854F0B; flex-shrink: 0; }
+.evt-row i { font-size: 18px; color: var(--amber-tx); flex-shrink: 0; }
 
 .pill { font-size: 12px; padding: 4px 10px; border-radius: 20px; border: var(--border); cursor: pointer; color: var(--text2); background: var(--bg); white-space: nowrap; user-select: none; transition: all .12s; }
-.pill.on { background: var(--blue-bg); color: var(--blue-tx); border-color: #85B7EB; }
+.pill.on { background: var(--blue-bg); color: var(--blue-tx); border-color: var(--blue); }

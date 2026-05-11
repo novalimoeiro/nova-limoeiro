@@ -131,7 +131,7 @@ export default function Assistencia() {
                   const evObj = ev ? EVENT_TYPES.find(e => e.id === ev) : null
                   return (
                     <th key={d} onClick={() => setEvtModal({ date:d, day:mt.date.getDate() })}
-                      style={{ ...thBase, width:42, cursor:'pointer', background:ev?'var(--amber-bg)':'var(--bg2)', color:ev?'var(--amber-tx)':mt.type==='qui'?'var(--blue)':'#993556' }}>
+                      style={{ ...thBase, width:42, cursor:'pointer', background:ev?'var(--col-evt-bg)':'var(--bg2)', color:ev?'var(--col-evt-tx)':mt.type==='qui'?'var(--col-qui)':'var(--col-dom)' }}>
                       <span style={{ fontSize:9, display:'block', opacity:.7 }}>{mt.type==='qui'?'Qui':'Dom'}</span>
                       <span style={{ fontSize:11, fontWeight:500 }}>{mt.date.getDate()}</span>
                       {ev && <i className={`ti ${evObj?.icon || 'ti-star'}`} style={{ fontSize:10, display:'block', marginTop:1 }} title={evObj?.label} aria-label={evObj?.label} />}
@@ -163,7 +163,7 @@ export default function Assistencia() {
                         <td style={tdSticky(0,120)}>{mb.name}</td>
                         {meetings.map(mt => {
                           const d = dateStr(mt.date)
-                          if (events[d]) return <td key={d} style={{ ...tdBase, background:'var(--amber-bg)', color:'var(--amber-tx)', fontSize:10 }}>—</td>
+                          if (events[d]) return <td key={d} style={{ ...tdBase, background:'var(--col-evt-bg)', color:'var(--col-evt-tx)', fontSize:10 }}>—</td>
                           const v = attendance[`${mb.id}_${d}`]||''
                           return (
                             <td key={d} style={{ ...tdBase, cursor:'pointer' }}
@@ -172,9 +172,9 @@ export default function Assistencia() {
                             </td>
                           )
                         })}
-                        <td style={{ ...tdBase, fontWeight:500, color:'var(--green-tx)', fontSize:11 }}>{cP}</td>
-                        <td style={{ ...tdBase, fontWeight:500, color:'var(--blue)', fontSize:11 }}>{cZ}</td>
-                        <td style={{ ...tdBase, fontWeight:500, color:'var(--red-tx)', fontSize:11 }}>{cA}</td>
+                        <td style={{ ...tdBase, fontWeight:500, color:'var(--att-P-tx)', fontSize:11 }}>{cP}</td>
+                        <td style={{ ...tdBase, fontWeight:500, color:'var(--att-Z-tx)', fontSize:11 }}>{cZ}</td>
+                        <td style={{ ...tdBase, fontWeight:500, color:'var(--att-A-tx)', fontSize:11 }}>{cA}</td>
                       </tr>
                     )
                   })
@@ -182,7 +182,7 @@ export default function Assistencia() {
               })}
 
               {/* Visitantes/Outros row */}
-              <tr><td colSpan={meetings.length+5} style={{ height:3, background:'var(--amber-bg)', borderColor:'var(--amber-bg)', padding:0 }} /></tr>
+              <tr><td colSpan={meetings.length+5} style={{ height:3, background:'var(--col-evt-bg)', borderColor:'var(--col-evt-bg)', padding:0 }} /></tr>
               <tr>
                 <td style={{ ...tdSticky(0,120), fontWeight:600, color:'var(--amber-tx)', fontSize:11 }}>Visitantes/Outros</td>
                 {meetings.map(mt => {
@@ -190,9 +190,9 @@ export default function Assistencia() {
                   if (events[d]) return <td key={d} style={{ ...tdBase, background:'var(--amber-bg)' }}>—</td>
                   const count = visitors[d]
                   return (
-                    <td key={d} style={{ ...tdBase, cursor:'pointer', background:count?'var(--amber-bg)':undefined }}
+                    <td key={d} style={{ ...tdBase, cursor:'pointer', background:count?'var(--col-evt-bg)':undefined }}
                       onClick={() => { setVisitorModal({ date:d, day:mt.date.getDate() }); setVisitorInput(count?String(count):'') }}>
-                      {count ? <span style={{ fontSize:11, fontWeight:600, color:'var(--amber-tx)' }}>{count}</span> : ''}
+                      {count ? <span style={{ fontSize:11, fontWeight:600, color:'var(--col-evt-tx)' }}>{count}</span> : ''}
                     </td>
                   )
                 })}
@@ -212,9 +212,9 @@ export default function Assistencia() {
                   })
                   return (
                     <td key={d} style={{ ...tdBase, fontSize:9 }}>
-                      <span style={{ color:'var(--green-tx)' }}>{P}</span>/
-                      <span style={{ color:'var(--blue)' }}>{Z}</span>/
-                      <span style={{ color:'var(--red-tx)' }}>{A}</span>
+                      <span style={{ color:'var(--att-P-tx)' }}>{P}</span>/
+                      <span style={{ color:'var(--att-Z-tx)' }}>{Z}</span>/
+                      <span style={{ color:'var(--att-A-tx)' }}>{A}</span>
                     </td>
                   )
                 })}
