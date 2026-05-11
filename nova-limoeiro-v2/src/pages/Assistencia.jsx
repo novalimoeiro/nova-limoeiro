@@ -115,7 +115,15 @@ export default function Assistencia() {
             <button key={g.id} className={`pill ${groupFilter===g.name?'on':''}`} onClick={() => setGroupFilter(g.name)}>{g.name}</button>
           ))}
         </div>
-        {saving && <span style={{ fontSize:11, color:'var(--text2)', marginLeft:'auto' }}>Salvando…</span>}
+        <div style={{ marginLeft:'auto', display:'flex', gap:8, alignItems:'center' }}>
+          {[['var(--att-P-bg)','var(--att-P-tx)','P Presente'],['var(--att-Z-bg)','var(--att-Z-tx)','Z Zoom'],['var(--att-A-bg)','var(--att-A-tx)','A Ausente'],['var(--att-E-bg)','var(--att-E-tx)','E Visit.']].map(([bg,tx,label]) => (
+            <span key={label} style={{ display:'flex', alignItems:'center', gap:3, fontSize:10, color:`var(${tx.slice(4,-1)})` }}>
+              <span style={{ width:14, height:14, borderRadius:3, background:`var(${bg.slice(4,-1)})`, border:`1px solid var(${tx.slice(4,-1)})`, display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:8, fontWeight:700, color:`var(${tx.slice(4,-1)})` }}>{label[0]}</span>
+              <span style={{ display:'none' }} className="legend-label">{label.slice(2)}</span>
+            </span>
+          ))}
+          {saving && <span style={{ fontSize:11, color:'var(--text2)' }}>Salvando…</span>}
+        </div>
       </div>
 
       {/* Table */}
@@ -148,8 +156,11 @@ export default function Assistencia() {
                 return [
                   <tr key={`sep-${grp}`}>
                     <td colSpan={meetings.length+4}
-                      style={{ background:g.bg, padding:'5px 10px', borderTop:`2px solid ${g.color}`, borderBottom:`1px solid ${g.color}30` }}>
-                      <span style={{ fontSize:11, fontWeight:700, color:g.color, letterSpacing:.3, whiteSpace:'nowrap' }}>{grp}</span>
+                      style={{ background:g.bg, padding:'6px 12px', borderTop:`3px solid ${g.color}` }}>
+                      <span style={{ fontSize:12, fontWeight:700, color:g.color, letterSpacing:.3, whiteSpace:'nowrap', display:'flex', alignItems:'center', gap:6 }}>
+                        <span style={{ display:'inline-block', width:9, height:9, borderRadius:'50%', background:g.color, flexShrink:0 }}/>
+                        {grp}
+                      </span>
                     </td>
                   </tr>,
                   ...mems.map(mb => {
@@ -211,14 +222,14 @@ export default function Assistencia() {
                     if (v==='P') P++; else if (v==='Z') Z++; else if (v==='A') A++
                   })
                   return (
-                    <td key={d} style={{ ...tdBase, fontSize:9 }}>
+                    <td key={d} style={{ ...tdBase, fontSize:11, fontWeight:600, height:32 }}>
                       <span style={{ color:'var(--att-P-tx)' }}>{P}</span>/
                       <span style={{ color:'var(--att-Z-tx)' }}>{Z}</span>/
                       <span style={{ color:'var(--att-A-tx)' }}>{A}</span>
                     </td>
                   )
                 })}
-                <td style={tdBase}/><td style={tdBase}/><td style={tdBase}/>
+                <td style={{ ...tdBase, height:32 }}/><td style={{ ...tdBase, height:32 }}/><td style={{ ...tdBase, height:32 }}/>
               </tr>
             </tbody>
           </table>
