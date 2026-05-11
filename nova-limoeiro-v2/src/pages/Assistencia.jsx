@@ -131,10 +131,10 @@ export default function Assistencia() {
                   const evObj = ev ? EVENT_TYPES.find(e => e.id === ev) : null
                   return (
                     <th key={d} onClick={() => setEvtModal({ date:d, day:mt.date.getDate() })}
-                      style={{ ...thBase, minWidth: ev ? 90 : 46, cursor:'pointer', background:ev?'var(--amber-bg)':'var(--bg2)', color:ev?'var(--amber-tx)':mt.type==='qui'?'var(--blue)':'#993556' }}>
+                      style={{ ...thBase, minWidth: ev ? Math.min(evObj?.label.length * 7 + 10, 130) : 46, cursor:'pointer', background:ev?'var(--amber-bg)':'var(--bg2)', color:ev?'var(--amber-tx)':mt.type==='qui'?'var(--blue)':'#993556' }}>
                       <span style={{ fontSize:9, display:'block', opacity:.7 }}>{mt.type==='qui'?'Qui':'Dom'}</span>
                       <span style={{ fontSize:11, fontWeight:500 }}>{mt.date.getDate()}</span>
-                      {ev && <span style={{ fontSize:8, display:'block', whiteSpace:'nowrap' }}>{evObj?.label}</span>}
+                      {ev && <span style={{ fontSize:8, display:'block', whiteSpace:'normal', lineHeight:1.2, marginTop:1 }}>{evObj?.label}</span>}
                     </th>
                   )
                 })}
