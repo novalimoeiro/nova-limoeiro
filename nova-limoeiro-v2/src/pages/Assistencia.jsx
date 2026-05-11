@@ -148,11 +148,8 @@ export default function Assistencia() {
                 return [
                   <tr key={`sep-${grp}`}>
                     <td colSpan={meetings.length+4}
-                      style={{ background:g.bg, padding:'6px 12px', borderTop:`3px solid ${g.color}`, borderLeft:`3px solid ${g.color}` }}>
-                      <span style={{ fontSize:12, fontWeight:800, color:g.tx, letterSpacing:.3, whiteSpace:'nowrap', display:'flex', alignItems:'center', gap:6 }}>
-                        <span style={{ display:'inline-block', width:9, height:9, borderRadius:'50%', background:g.color, flexShrink:0 }}/>
-                        {grp}
-                      </span>
+                      style={{ background:g.bg, padding:'5px 10px', borderTop:`2px solid ${g.color}`, borderBottom:`1px solid ${g.color}30` }}>
+                      <span style={{ fontSize:11, fontWeight:700, color:g.color, letterSpacing:.3, whiteSpace:'nowrap' }}>{grp}</span>
                     </td>
                   </tr>,
                   ...mems.map(mb => {
