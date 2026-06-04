@@ -9,25 +9,14 @@ export function MembersProvider({ children }) {
 
   const load = useCallback(async () => {
     setLoading(true)
-    const { data } = await supabase
-      .from('members')
-      .select('*')
-      .eq('active', true)
-      .order('group_name')
-      .order('name')
+    const { data } = await supabase.from('members').select('*').eq('active', true).order('group_name').order('name')
     setMembers(data || [])
     setLoading(false)
   }, [])
 
   useEffect(() => { load() }, [load])
 
-  return (
-    <MembersCtx.Provider value={{ members, loading, invalidate: load }}>
-      {children}
-    </MembersCtx.Provider>
-  )
+  return <MembersCtx.Provider value={{ members, loading, invalidate: load }}>{children}</MembersCtx.Provider>
 }
 
-export function useMembers() {
-  return useContext(MembersCtx)
-}
+export function useMembers() { return useContext(MembersCtx) }
