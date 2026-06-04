@@ -13,10 +13,10 @@ const STATUS_OPTIONS = [
 ]
 
 const thBase = { position:'sticky', top:0, zIndex:10, background:'var(--bg2)', padding:'4px 2px', border:'var(--border)', fontWeight:500, fontSize:10, color:'var(--text2)', textAlign:'center', width:42, minHeight:44 }
-const tdBase = { border:'var(--border)', padding:0, textAlign:'center', height:36, width:42, cursor:'pointer' }
+const tdBase = { border:'1px solid #d0d0cc', padding:0, textAlign:'center', height:40, width:42, cursor:'pointer', background:'#fafaf8' }
 
 function thN(left, w) { return { ...thBase, position:'sticky', left, zIndex:20, textAlign:'center', width:w, background:'var(--bg2)' } }
-function tdN(left, w, bold) { return { ...tdBase, position:'sticky', left, zIndex:5, background:'var(--bg)', padding:'0 4px', textAlign:'center', width:w, fontWeight:bold?700:400, fontSize:bold?13:12, height:bold?38:36 } }
+function tdN(left, w, bold) { return { ...tdBase, position:'sticky', left, zIndex:5, background:'var(--bg)', padding:'0 6px', textAlign:'left', width:w, fontWeight:bold?700:400, fontSize:bold?13:12, height:bold?40:40, borderRight:'2px solid #c0c0bc' } }
 
 export default function Assistencia() {
   const [params, setParams] = useSearchParams()
@@ -100,6 +100,21 @@ export default function Assistencia() {
 
   return (
     <div style={{display:'flex',flexDirection:'column',height:'100%',overflow:'hidden'}}>
+      <style>{`
+        /* LIGHT MODE cells */
+        .att-cell { background: #f0eeea; border: 1px solid #c8c8c4 !important; }
+        .att-cell:active { background: #dedad4 !important; }
+
+        /* DARK MODE cells */
+        [data-theme='dark'] .att-cell { background: #2e2e32 !important; border: 1px solid #505056 !important; }
+        [data-theme='dark'] .att-cell:active { background: #424248 !important; }
+        [data-theme='dark'] table td { border-color: #505056 !important; }
+        [data-theme='dark'] table th { border-color: #505056 !important; background: #1e1e22 !important; }
+        [data-theme='dark'] .att-name-col { background: #1a1a1e !important; border-right: 2px solid #606068 !important; }
+
+        /* Touch target size */
+        @media (max-width: 768px) { .att-cell { min-height: 44px; } }
+      `}</style>
       <div style={{padding:'10px 16px',borderBottom:'var(--border)',background:'var(--bg)',display:'flex',gap:8,alignItems:'center',flexWrap:'wrap',flexShrink:0}}>
         <select value={month} onChange={e=>setMonth(parseInt(e.target.value))}
           style={{fontSize:13,padding:'5px 8px',border:'var(--border)',borderRadius:'var(--radius)',background:'var(--bg)',color:'var(--text)'}}>
@@ -167,7 +182,7 @@ export default function Assistencia() {
                           if(events[d]) return <td key={d} style={{...tdBase,background:'var(--col-evt-bg)',color:'var(--col-evt-tx)',fontSize:10}}>—</td>
                           const v=attendance[`${mb.id}_${d}`]||''
                           return (
-                            <td key={d} style={{...tdBase,background:v?undefined:'var(--bg2)'}} onClick={()=>setAttModal({memberId:mb.id,date:d,name:mb.name,day:mt.date.getDate()})}>
+                            <td key={d} className="att-cell" style={{...tdBase,background:v?undefined:undefined}} onClick={()=>setAttModal({memberId:mb.id,date:d,name:mb.name,day:mt.date.getDate()})}>
                               {v && <span className={`badge badge-${v}`}>{v}</span>}
                             </td>
                           )
