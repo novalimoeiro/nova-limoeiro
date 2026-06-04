@@ -51,7 +51,7 @@ export default function Assistencia() {
   async function loadData() {
     setLoading(true)
     const [{ data: att }, { data: evts }, { data: vis }] = await Promise.all([
-      supabase.from('attendance').select('member_id,date,status').eq('year', 2026),
+      supabase.from('attendance').select('member_id,date,status').eq('year', 2026).limit(100000),
       supabase.from('events').select('date,event_type').eq('year', 2026),
       supabase.from('visitors').select('date,count').eq('year', 2026),
     ])
