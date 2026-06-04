@@ -95,9 +95,6 @@ Após o domínio estar ativo:
 
 ---
 
-
-
-
 ## Desenvolvimento local
 
 ```bash
@@ -112,6 +109,8 @@ cp .env.example .env
 npm run dev
 # Acesse: http://localhost:5173
 ```
+
+
 
 ---
 
