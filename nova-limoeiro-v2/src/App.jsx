@@ -17,11 +17,7 @@ function ProtectedRoute({ children }) {
     </div>
   )
   if (!session) return <Navigate to="/login" replace />
-  return (
-    <GroupsProvider>
-      <MembersProvider>{children}</MembersProvider>
-    </GroupsProvider>
-  )
+  return <GroupsProvider><MembersProvider>{children}</MembersProvider></GroupsProvider>
 }
 
 function PublicRoute({ children }) {
