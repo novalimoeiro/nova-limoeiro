@@ -24,7 +24,7 @@ export default function Dashboard() {
   useEffect(() => {
     async function load() {
       const [{ data: att }, { data: evts }] = await Promise.all([
-        supabase.from('attendance').select('member_id,date,status').eq('year', 2026),
+        supabase.from('attendance').select('member_id,date,status').eq('year', 2026),limit(100000)
         supabase.from('events').select('date,event_type').eq('year', 2026),
       ])
       const attMap = {}
