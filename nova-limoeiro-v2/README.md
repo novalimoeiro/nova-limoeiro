@@ -53,6 +53,7 @@ nova-limoeiro/
 2. Crie com o e-mail e senha que quiser (ex: `admin@novalimoeiro.com.br`)
 3. Você pode criar usuários adicionais para líderes de grupo
 
+
 ### 4. Publicar no Vercel
 
 1. Crie uma conta gratuita em **vercel.com**
